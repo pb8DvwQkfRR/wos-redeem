@@ -169,6 +169,7 @@ func handleHelpCommand(s *discordgo.Session, i *discordgo.InteractionCreate) {
 		Type: discordgo.InteractionResponseChannelMessageWithSource,
 		Data: &discordgo.InteractionResponseData{
 			Content: helpMessage,
+			Flags:   1 << 6,
 		},
 	})
 }
@@ -201,7 +202,10 @@ func sendErrorMessage(s *discordgo.Session, m *discordgo.MessageCreate, i *disco
 	if i != nil {
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionResponseData{Content: content},
+			Data: &discordgo.InteractionResponseData{
+				Content: content,
+				Flags:   1 << 6,
+			},
 		})
 	} else {
 		s.ChannelMessageSend(m.ChannelID, content)
@@ -213,7 +217,10 @@ func sendInitialMessage(s *discordgo.Session, m *discordgo.MessageCreate, i *dis
 	if i != nil {
 		s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
 			Type: discordgo.InteractionResponseChannelMessageWithSource,
-			Data: &discordgo.InteractionResponseData{Content: content},
+			Data: &discordgo.InteractionResponseData{
+				Content: content,
+				Flags:   1 << 6,
+			},
 		})
 		return nil
 	}
