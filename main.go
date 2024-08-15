@@ -417,9 +417,19 @@ func retryRequest[T any](fn func() (*T, error)) (*T, error) {
 			return result, nil
 		}
 
+		var playerResp PlayerResponse
+		if jsonErr := json.Unmarshal([]byte(err.Error()), &playerResp); jsonErr == nil {
+			if (playerResp.Msg == "TIMEOUT RETRY.") ||
+				(playerResp.Msg == "40004" && playerResp.ErrCode == 40004) {
+				fmt.Printf("Received error. Retrying in %v. Attempt %d/%d\n", backoff, attempt+1, MAX_RETRIES)
+				time.Sleep(backoff)
+				backoff += time.Second
+				continue
+			}
+		}
+
 		if strings.Contains(err.Error(), "Too Many Attempts") ||
 			strings.Contains(err.Error(), "invalid character '<' looking for beginning of value") ||
-			strings.Contains(err.Error(), "TIMEOUT RETRY") ||
 			strings.Contains(err.Error(), "Sign Error") {
 			fmt.Printf("Received error. Retrying in %v. Attempt %d/%d\n", backoff, attempt+1, MAX_RETRIES)
 			time.Sleep(backoff)
